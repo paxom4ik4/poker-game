@@ -1,0 +1,25 @@
+{
+  "name": "pokerjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^7.7.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paxom4ik4/poker-game.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paxom4ik4/poker-game/issues"
+  },
+  "homepage": "https://github.com/paxom4ik4/poker-game#readme"
+}

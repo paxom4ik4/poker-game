@@ -1,5 +1,5 @@
 // TODO: 
-
+// prod. by: Paxom4ik, Kokosik11 <- 
 // Array of objects for cards
 // Cards value: 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K, A.
 // Cards suits: Heart - червы, Spades - пики, Diamonds - Бубны, Clubs - трефы (крести).
@@ -48,6 +48,20 @@
 // 13) После всех ходов, деньги идут в банк, а дилер открывает просит вскрыть карты
 // 14) Игрок с самой сильной комбинацией - забирает всё.
 // 15) Карты перемешиваются, раздаются блайнды и кнопка и игра начинается снова 
+//
+//  Реализовать игровую партию
+//  1) Доделать методы (реализовать новые, пересмотреть готовые)
+//  2) Имитировать реальную игру, с помощью вызова данных методов
+//  3) В случае появление ошибок - дебаг! GLHF
+//
+//  Подумать над алгоритмом сравнения комбинаций карт. Определение победителя.
+//
+//  Игровая партия:
+//  1)Реализовать ожидание действий
+//
+//
+//
+//
 
 class Card {
     constructor(cardValue, cardSuit) {
@@ -57,8 +71,8 @@ class Card {
 }
 
 class Deck {
-    cardValues = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
     cardSuits = ["Hearts", "Spades", "Diamonds", "Clubs"];
+    cardValues = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
     cards = [];
 
     constructor() {
@@ -87,7 +101,7 @@ class Player {
     gameState = {
         cards: [],
         money: 1000,
-        currentBet: 0,
+        playerBet: 0
     }
     positionState = {
         hasDealerButton: false,
@@ -95,6 +109,7 @@ class Player {
         isBigBlind: false,
         isLeave: false,
         isCurrentMove: false,
+        isMadeMove: false,
     }
     constructor(name) {
         this.name = name;
@@ -109,18 +124,31 @@ class Player {
     check() {
         console.log(this.name + ' has checked');
     }
-    call() {
+    call(currentBet) {
+        if (this.gameState.moeney >= currentBet) {
+            this.gameState.money -= currentBet;
+            this.gameStat.playerBet = currentBet;
+            this.positionState.isMadeMove = true;
+        } else {
+            this.gameState.playerBet = this.gameState.money;
+            this.gameState.money -= this.gameState.money;
+            this.positionState.isMadeMove = true;
+        }
         // Player can raise the previous bet if he want. So next player should call this raise of fold.
     }
     raise(playerBet) {
         if (playerBet < this.gameState.currentBet) {
             return "ERROR";
         }
-        this.gameState.currentBet += playerBet;
+        this.gameState.playerBet += playerBet;
+        let players = game.players;
+
+        // Всем кроме этого плеера сделать поле isMadeMove: false !!!
     }
     // Player can fold the cards. All money that he bets goes to bank. 
     fold() {
         this.cards = [];
+        this.positionState.isLeave = true;
         console.log(this.name + ' folds cards');
     }
 }
@@ -135,9 +163,17 @@ class Game {
     bank = 0;
     currentPlayer = 0;
     currentPlayerMove = 0;
+    currentBet = this.bigBlind;
     // Method that starts the game
     startGame() {
-        this.players.forEach(player => console.log(player.name + ' has joined the game'))
+        this.startPart();
+    }
+    // Method that open the cards on the table (3: 1 time or 1: 2 times);
+    startPart() {
+        this.players.forEach(player => console.log(player.name + ' has joined the game'));
+
+        // Начало партии
+        const currentPartPlayers = [...this.players];
 
         this.deck = new Deck();
         console.log("Deck has created");
@@ -150,9 +186,25 @@ class Game {
         })
 
         this.setBlinds();
+
+        // while (currentPartPlayers.length != 1 ||
+        //     this.cardsOnTable === 5 &&
+        //     currentPartPlayers.every(item => item.positionState.isMadeMove)) {
+        //     // currentPartPlayers.filter(player => player.positionState.isCurrentMove)[0].call();
+
+        //     console.log(currentPartPlayers === currentPartPlayers.filter(player => (player.gameState.playerBet === this.currentBet)))
+
+        // }
+        // currentPartPlayers.map(player => {
+        //     player.gameState.playerBet = 10;
+        // })
+        // console.log(currentPartPlayers === currentPartPlayers.filter(player => (player.gameState.playerBet === this.currentBet)))
+
+        // if(lenght) {...}
+
+        // конец партии
         this.updateBlinds();
     }
-    // Method that open the cards on the table (3: 1 time or 1: 2 times);
     openCard() {
         switch (this.cardsOnTable.length) {
             case 0: {
@@ -162,7 +214,7 @@ class Game {
                 break;
             }
             case 5: {
-                return;
+                break;
                 // End part method
             }
             default: {
@@ -223,8 +275,8 @@ class Game {
                 hasDealerButton: false,
                 isSmallBlind: false,
                 isBigBlind: false,
-                isLeave: false,
-                isCurrentMove: false,
+                isLeave: player.positionState.isLeave,
+                isCurrentMove: player.positionState.isCurrentMove,
             }
         })
     }
